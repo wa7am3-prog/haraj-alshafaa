@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حراج الشعفة</title>
+    <!-- خط تجوال والأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #d97706;
+            --accent-hover: #b45309;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 75px;
+        }
+
+        /* الهيدر */
+        .app-header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-title span { color: var(--accent-color); }
+
+        .user-status {
+            font-size: 13px;
+            color: var(--accent-color);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* الحاوية الرئيسية */
+        .app-container { padding: 15px; }
+
+        .search-bar {
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding-right: 10px;
+            background: transparent;
+        }
+
+        /* شبكة الإعلانات */
+        .ads-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .ad-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ad-img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .ad-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .ad-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ad-price {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .ad-footer {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 6px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* النوافذ المنبثقة (Modals) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 10px;
+            color: var(--text-light);
+        }
+
+        .toggle-auth span {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* أزرار أسفل الشاشة */
+        .fab-add {
+            position: fixed;
+            bottom: 65px;
+            left: 20px;
+            background: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 11px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .nav-item.active { color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر -->
+    <header class="app-header">
+        <div class="app-title">
+            <i class="fa-solid fa-store" style="color: var(--accent-color);"></i>
+            حراج <span>الشعفة</span>
+        </div>
+        <div id="userBtn" class="user-status" onclick="openAuthModal()">تسجيل الدخول</div>
+    </header>
+
+    <!-- المحتوى -->
+    <div class="app-container">
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
+            <input type="text" id="searchInput" placeholder="ابحث في الإعلانات..." onkeyup="filterAds()">
+        </div>
+
+        <h3 style="font-size: 15px; margin-bottom: 10px;">الإعلانات الحالية</h3>
+        <div class="ads-grid" id="adsContainer">
+            <p style="grid-column: span 2; text-align: center; color: var(--text-light);">جاري تحميل الإعلانات...</p>
+        </div>
+    </div>
+
+    <!-- زر إضافة إعلان -->
+    <button class="fab-add" onclick="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <button class="nav-item active"><i class="fa-solid fa-house" style="font-size: 16px;"></i>الرئيسية</button>
+        <button class="nav-item" onclick="openAuthModal()"><i class="fa-regular fa-user" style="font-size: 16px;"></i>حسابي</button>
+    </nav>
+
+    <!-- نافذة تسجيل الدخول/إنشاء حساب -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="authTitle">تسجيل الدخول</h3>
+                <button class="close-btn" onclick="closeModal('authModal')">&times;</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="authEmail" required placeholder="example@mail.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="authPassword" required placeholder="******">
+                </div>
+                <button type="submit" class="btn-submit" id="authSubmitBtn">دخول</button>
+            </form>
+            <div class="toggle-auth">
+                <span id="toggleText" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة إعلان -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>إضافة إعلان جديد</h3>
+                <button class="close-btn" onclick="closeModal('addModal')">&times;</button>
+            </div>
+            <form onsubmit="handleAddAd(event)">
+                <div class="form-group">
+                    <label>عنوان الإعلان</label>
+                    <input type="text" id="adTitle" required placeholder="مثال: تويوتا كامري 2022">
+                </div>
+                <div class="form-group">
+                    <label>السعر (ر.س)</label>
+                    <input type="number" id="adPrice" required placeholder="50000">
+                </div>
+                <div class="form-group">
+                    <label>رابط الصورة (URL)</label>
+                    <input type="url" id="adImage" required placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn-submit">نشر الإعلان</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- كود ربط Firebase المدمج -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyChuqArvHD05Greav-XRfe6okNBhw5jLLE",
+            authDomain: "haraj-alshafa-7cba8.firebaseapp.com",
+            projectId: "haraj-alshafa-7cba8",
+            storageBucket: "haraj-alshafa-7cba8.firebasestorage.app",
+            messagingSenderId: "199139052361",
+            appId: "1:199139052361:web:2e2b6444e75c25d6856898",
+            measurementId: "G-84BV7TG332"
+        };
+
+        // تهيئة Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let isSignUp = false;
+        let allAds = [];
+
+        // متابعة حالة تسجيل الدخول
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const userBtn = document.getElementById('userBtn');
+            if (user) {
+                userBtn.innerText = "خروج (" + user.email.split('@')[0] + ")";
+                userBtn.onclick = () => signOut(auth);
+            } else {
+                userBtn.innerText = "تسجيل الدخول";
+                userBtn.onclick = () => openAuthModal();
+            }
+        });
+
+        // تنفيذ عملية تسجيل الدخول أو إنشاء الحساب
+        window.handleAuth = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            try {
+                if (isSignUp) {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("تم إنشاء الحساب بنجاح!");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alert("تم تسجيل الدخول بنجاح!");
+                }
+                closeModal('authModal');
+                document.getElementById('authForm').reset();
+            } catch (error) {
+                alert("خطأ: " + error.message);
+            }
+        };
+
+        // تبديل النافذة بين الدخول والإنشاء
+        window.toggleAuthMode = () => {
+            isSignUp = !isSignUp;
+            document.getElementById('authTitle').innerText = isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول";
+            document.getElementById('authSubmitBtn').innerText = isSignUp ? "إنشاء حساب" : "دخول";
+            document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب بالفعل؟ تسجيل الدخول" : "ليس لديك حساب؟ إنشاء حساب جديد";
+        };
+
+        // إضافة إعلان جديد
+        window.handleAddAd = async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert("يرجى تسجيل الدخول أولاً لإضافة إعلان!");
+                closeModal('addModal');
+                openAuthModal();
+                return;
+            }
+
+            const title = document.getElementById('adTitle').value;
+            const price = document.getElementById('adPrice').value;
+            const image = document.getElementById('adImage').value;
+
+            try {
+                await addDoc(collection(db, "ads"), {
+                    title: title,
+                    price: price,
+                    image: image,
+                    user: currentUser.email,
+                    createdAt: new Date()
+                });
+                alert("تم نشر الإعلان بنجاح!");
+                closeModal('addModal');
+                e.target.reset();
+            } catch (error) {
+                alert("خطأ أثناء النشر: " + error.message);
+            }
+        };
+
+        // جلب وعرض الإعلانات أونلاين لحظياً (Realtime)
+        const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            allAds = [];
+            snapshot.forEach((doc) => {
+                allAds.push({ id: doc.id, ...doc.data() });
+            });
+            renderAds(allAds);
+        }, (error) => {
+            console.error("خطأ في جلب الإعلانات: ", error);
+        });
+
+        function renderAds(ads) {
+            const container = document.getElementById('adsContainer');
+            container.innerHTML = '';
+
+            if (ads.length === 0) {
+                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: var(--text-light);">لا توجد إعلانات حالياً. كن أول المضيفين!</p>';
+                return;
+            }
+
+            ads.forEach(ad => {
+                container.innerHTML += `
+                    <div class="ad-card">
+                        <img src="${ad.image}" class="ad-img" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="ad-body">
+                            <div>
+                                <h4 class="ad-title">${ad.title}</h4>
+                                <div class="ad-price">${ad.price} ر.س</div>
+                            </div>
+                            <div class="ad-footer">
+                                <span><i class="fa-solid fa-location-dot"></i> الشعفة</span>
+                                <span>أونلاين</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // تصفية البحث
+        window.filterAds = () => {
+            const queryText = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allAds.filter(ad => ad.title.toLowerCase().includes(queryText));
+            renderAds(filtered);
+        };
+
+        // فتح وإغلاق النوافذ المنبثقة
+        window.openAuthModal = () => document.getElementById('authModal').classList.add('active');
+        window.openAddModal = () => {
+            if (!currentUser) {
+                alert("يرجى تسجيل الدخول أولاً لتتمكن من إضافة إعلان.");
+                openAuthModal();
+                return;
+            }
+            document.getElementById('addModal').classList.add('active');
+        };
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+    </script>
+</body>
+</html>
