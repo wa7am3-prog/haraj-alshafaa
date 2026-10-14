@@ -1,4 +1,4 @@
-const CACHE_NAME = 'haraj-shafa-v1';
+const CACHE_NAME = 'haraj-shafa-v2';
 const urlsToCache = [
   './',
   './index.html',
