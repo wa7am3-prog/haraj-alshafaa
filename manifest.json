@@ -1,0 +1,22 @@
+{
+  "name": "حراج الشعفة",
+  "short_name": "الشعفة",
+  "description": "منصة حراج الشعفة الشاملة للإعلانات",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0b0f19",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/0b0f19/f59e0b?text=%D2%A3",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512/0b0f19/f59e0b?text=%D2%A3",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
