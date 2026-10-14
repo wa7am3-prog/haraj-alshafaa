@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>حراج الشعفة</title>
+    <title>حراج الشعفة - المبرمج أدهم الهبة</title>
     <!-- ربط ملف إعدادات PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0f19">
@@ -230,11 +230,40 @@
             justify-content: space-between;
         }
 
+        /* كرت معلومات المبرمج والتطبيق */
+        .dev-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--accent-color);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .dev-icon {
+            font-size: 30px;
+            color: var(--accent-color);
+        }
+
+        .dev-info h4 {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .dev-info p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(5px);
             z-index: 2000;
             justify-content: center;
@@ -347,6 +376,448 @@
             justify-content: space-around;
             padding: 10px 0;
             border-top: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 11px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .nav-item.active { color: var(--accent-color); }
+        .nav-item i { font-size: 18px; }
+
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 14px;
+            position: fixed;
+            z-index: 3000;
+            left: 50%;
+            bottom: 90px;
+            transform: translateX(-50%);
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.3s, fadeout 0.3s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 90px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 90px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+    <div id="toast">تمت العملية بنجاح</div>
+
+    <!-- الهيدر -->
+    <header class="app-header">
+        <div class="app-title">
+            <i class="fa-solid fa-crown" style="color: var(--accent-color);"></i>
+            حراج <span>الشعفة</span>
+        </div>
+        <button id="userBtn" class="user-btn" onclick="openAuthModal()">تسجيل الدخول</button>
+    </header>
+
+    <div class="app-container">
+        
+        <!-- كرت تعريف بالمبرمج والتطبيق -->
+        <div class="dev-card">
+            <i class="fa-solid fa-code dev-icon"></i>
+            <div class="dev-info">
+                <h4>تطبيق حراج الشعفة الرسمية</h4>
+                <p>تطوير وبرمجة: <strong>أدهم الهبة</strong></p>
+                <p style="font-size: 10px; color: var(--accent-color); margin-top:2px;">منصة إعلانات سريعة وأمنة أونلاين</p>
+            </div>
+        </div>
+
+        <!-- البحث -->
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="ابحث عن سيارة، عقار، جوال..." onkeyup="filterAds()">
+        </div>
+
+        <!-- الأقسام -->
+        <div class="categories-scroll">
+            <button class="cat-chip active" onclick="filterByCategory('الكل', this)">الكل</button>
+            <button class="cat-chip" onclick="filterByCategory('سيارات', this)">السيارات</button>
+            <button class="cat-chip" onclick="filterByCategory('عقارات', this)">العقارات</button>
+            <button class="cat-chip" onclick="filterByCategory('جوالات', this)">الجوالات</button>
+            <button class="cat-chip" onclick="filterByCategory('أثاث', this)">الأثاث</button>
+            <button class="cat-chip" onclick="filterByCategory('إلكترونيات', this)">الإلكترونيات</button>
+        </div>
+
+        <div class="section-heading">
+            <span>أحدث الإعلانات الفخمة</span>
+            <span id="adsCount" style="font-size: 12px; color: var(--text-light);">0 إعلان</span>
+        </div>
+        
+        <div class="ads-grid" id="adsContainer">
+            <p style="grid-column: span 2; text-align: center; color: var(--text-light); padding: 30px;">جاري تحميل الإعلانات...</p>
+        </div>
+    </div>
+
+    <!-- زر إضافة إعلان -->
+    <button class="fab-add" onclick="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- شريط التنقل -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i>الرئيسية</button>
+        <button class="nav-item" onclick="switchTab('myAds', this)"><i class="fa-solid fa-rectangle-list"></i>إعلاناتي</button>
+        <button class="nav-item" onclick="openAuthModal()"><i class="fa-regular fa-user"></i>حسابي</button>
+    </nav>
+
+    <!-- نافذة تسجيل الدخول الحقيقية -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="authTitle">تسجيل الدخول إلى التطبيق</h3>
+                <button class="close-btn" onclick="closeModal('authModal')">&times;</button>
+            </div>
+            
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="authEmail" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور (6 أحرف/أرقام على الأقل)</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-submit" id="authSubmitBtn">دخول</button>
+            </form>
+            
+            <div class="toggle-auth">
+                <span id="toggleText" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</span>
+            </div>
+
+            <hr style="margin: 20px 0 15px 0; border: 0; border-top: 1px solid var(--border-color);">
+            
+            <div style="text-align: center; font-size: 11px; color: var(--text-light);">
+                برمجة وتطوير: <strong style="color: var(--accent-color);">أدهم الهبة</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة إعلان -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>إضافة إعلان جديد</h3>
+                <button class="close-btn" onclick="closeModal('addModal')">&times;</button>
+            </div>
+            <form onsubmit="handleAddAd(event)">
+                <div class="form-group">
+                    <label>عنوان الإعلان</label>
+                    <input type="text" id="adTitle" required placeholder="مثال: تويوتا كامري 2022 نظيفة">
+                </div>
+                <div class="form-group">
+                    <label>القسم</label>
+                    <select id="adCategory">
+                        <option value="سيارات">السيارات</option>
+                        <option value="عقارات">العقارات</option>
+                        <option value="جوالات">الجوالات</option>
+                        <option value="أثاث">الأثاث</option>
+                        <option value="إلكترونيات">الإلكترونيات</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>السعر (ر.س)</label>
+                    <input type="number" id="adPrice" required placeholder="50000">
+                </div>
+                <div class="form-group">
+                    <label>رابط الصورة (URL)</label>
+                    <input type="url" id="adImage" required placeholder="https://images.unsplash.com/...">
+                </div>
+                <button type="submit" class="btn-submit">نشر الإعلان فوراً</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تفاصيل الإعلان -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="detTitle">تفاصيل الإعلان</h3>
+                <button class="close-btn" onclick="closeModal('detailsModal')">&times;</button>
+            </div>
+            <img id="detImg" src="" style="width:100%; height:160px; object-fit:cover; border-radius:12px; margin-bottom:12px; display:block;">
+            <div style="font-size: 18px; font-weight: bold; color: var(--accent-color); margin-bottom: 10px;" id="detPrice"></div>
+            <p id="detUser" style="font-size: 13px; color: var(--text-light); margin-bottom: 20px;"></p>
+            <div id="ownerActions"></div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            deleteDoc,
+            doc,
+            onSnapshot, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyChuqArvHD05Greav-XRfe6okNBhw5jLLE",
+            authDomain: "haraj-alshafa-7cba8.firebaseapp.com",
+            projectId: "haraj-alshafa-7cba8",
+            storageBucket: "haraj-alshafa-7cba8.firebasestorage.app",
+            messagingSenderId: "199139052361",
+            appId: "1:199139052361:web:2e2b6444e75c25d6856898",
+            measurementId: "G-84BV7TG332"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let isSignUp = false;
+        let allAds = [];
+        let currentFilterCategory = 'الكل';
+        let currentTab = 'home';
+
+        window.showToast = (msg) => {
+            const x = document.getElementById("toast");
+            x.innerText = msg;
+            x.className = "show";
+            setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
+        };
+
+        // متابعة حالة المستخدم وتسجيل الدخول
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const userBtn = document.getElementById('userBtn');
+            if (user) {
+                userBtn.innerText = user.email.split('@')[0];
+                userBtn.onclick = () => {
+                    if(confirm("هل تريد تسجيل الخروج؟")) {
+                        signOut(auth);
+                        showToast("تم تسجيل الخروج بنجاح");
+                    }
+                };
+            } else {
+                userBtn.innerText = "تسجيل الدخول";
+                userBtn.onclick = () => openAuthModal();
+            }
+        });
+
+        // تسجيل الدخول الحقيقي أو إنشاء حساب معالجة الأخطاء
+        window.handleAuth = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            try {
+                if (isSignUp) {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    showToast("تم إنشاء الحساب بنجاح بواسطة المبرمج أدهم الهبة!");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showToast("تم تسجيل الدخول بنجاح!");
+                }
+                closeModal('authModal');
+                document.getElementById('authForm').reset();
+            } catch (error) {
+                if(error.code === 'auth/weak-password'){
+                    showToast("كلمة المرور يجب أن تكون 6 خانات على الأقل");
+                } else if(error.code === 'auth/invalid-credential'){
+                    showToast("البريد أو كلمة المرور غير صحيحة، أو الحساب غير موجود");
+                } else {
+                    showToast("خطأ: " + error.message);
+                }
+            }
+        };
+
+        window.toggleAuthMode = () => {
+            isSignUp = !isSignUp;
+            document.getElementById('authTitle').innerText = isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول إلى التطبيق";
+            document.getElementById('authSubmitBtn').innerText = isSignUp ? "إنشاء حساب" : "دخول";
+            document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب بالفعل؟ تسجيل الدخول" : "ليس لديك حساب؟ إنشاء حساب جديد";
+        };
+
+        window.handleAddAd = async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                showToast("يرجى تسجيل الدخول أولاً!");
+                closeModal('addModal');
+                openAuthModal();
+                return;
+            }
+
+            const title = document.getElementById('adTitle').value;
+            const category = document.getElementById('adCategory').value;
+            const price = document.getElementById('adPrice').value;
+            const image = document.getElementById('adImage').value;
+
+            try {
+                await addDoc(collection(db, "ads"), {
+                    title: title,
+                    category: category,
+                    price: price,
+                    image: image,
+                    user: currentUser.email,
+                    createdAt: new Date()
+                });
+                showToast("تم نشر إعلانك بنجاح!");
+                closeModal('addModal');
+                e.target.reset();
+            } catch (error) {
+                showToast("خطأ أثناء النشر: " + error.message);
+            }
+        };
+
+        const q = query(collection(db, "ads"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            allAds = [];
+            snapshot.forEach((docSnap) => {
+                allAds.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            renderAds();
+        });
+
+        window.filterByCategory = (cat, element) => {
+            document.querySelectorAll('.cat-chip').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            currentFilterCategory = cat;
+            renderAds();
+        };
+
+        window.switchTab = (tab, element) => {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            currentTab = tab;
+            renderAds();
+        };
+
+        window.renderAds = () => {
+            const container = document.getElementById('adsContainer');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = allAds.filter(ad => {
+                const matchSearch = ad.title.toLowerCase().includes(searchVal);
+                const matchCategory = currentFilterCategory === 'الكل' || ad.category === currentFilterCategory;
+                const matchTab = currentTab === 'home' || (currentTab === 'myAds' && currentUser && ad.user === currentUser.email);
+                return matchSearch && matchCategory && matchTab;
+            });
+
+            document.getElementById('adsCount').innerText = filtered.length + " إعلان";
+            container.innerHTML = '';
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: var(--text-light); padding: 30px;">لا توجد إعلانات مطابقة.</p>';
+                return;
+            }
+
+            filtered.forEach(ad => {
+                container.innerHTML += `
+                    <div class="ad-card" onclick="openDetails('${ad.id}')">
+                        <div class="ad-img-container">
+                            <span class="ad-badge">${ad.category || 'عام'}</span>
+                            <img src="${ad.image}" class="ad-img" onerror="this.src='https://via.placeholder.com/150'">
+                        </div>
+                        <div class="ad-body">
+                            <div>
+                                <h4 class="ad-title">${ad.title}</h4>
+                                <div class="ad-price">${ad.price} ر.س</div>
+                            </div>
+                            <div class="ad-footer">
+                                <span><i class="fa-solid fa-location-dot"></i> الشعفة</span>
+                                <span>أونلاين</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.filterAds = () => { renderAds(); };
+
+        window.openDetails = (id) => {
+            const ad = allAds.find(a => a.id === id);
+            if(!ad) return;
+
+            document.getElementById('detTitle').innerText = ad.title;
+            document.getElementById('detPrice').innerText = ad.price + " ريال سعودي";
+            document.getElementById('detImg').src = ad.image;
+            document.getElementById('detUser').innerText = "نُشر بواسطة: " + ad.user;
+
+            const actionsDiv = document.getElementById('ownerActions');
+            actionsDiv.innerHTML = '';
+
+            if (currentUser && currentUser.email === ad.user) {
+                actionsDiv.innerHTML = `<button onclick="deleteAd('${ad.id}')" style="width:100%; padding:10px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">حذف الإعلان</button>`;
+            } else {
+                actionsDiv.innerHTML = `<a href="https://wa.me/?text=مرحباً، أنا مهتم بإعلانك: ${encodeURIComponent(ad.title)}" target="_blank" style="display:block; text-align:center; padding:12px; background:#22c55e; color:white; border-radius:8px; font-weight:bold; text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> تواصل مع المعلن</a>`;
+            }
+
+            document.getElementById('detailsModal').classList.add('active');
+        };
+
+        window.deleteAd = async (id) => {
+            if(confirm("هل أنت متأكد من حذف هذا الإعلان؟")) {
+                try {
+                    await deleteDoc(doc(db, "ads", id));
+                    closeModal('detailsModal');
+                    showToast("تم حذف الإعلان بنجاح");
+                } catch(error) {
+                    showToast("خطأ أثناء الحذف: " + error.message);
+                }
+            }
+        };
+
+        window.openAuthModal = () => document.getElementById('authModal').classList.add('active');
+        window.openAddModal = () => {
+            if (!currentUser) {
+                showToast("يرجى تسجيل الدخول أولاً لإضافة إعلان");
+                openAuthModal();
+                return;
+            }
+            document.getElementById('addModal').classList.add('active');
+        };
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+    </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('App Service Worker Registered'))
+            .catch(err => console.log('Error: ', err));
+        });
+      }
+    </script>
+</body>
+</html>
+1px solid var(--border-color);
             z-index: 1000;
         }
 
